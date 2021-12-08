@@ -1,8 +1,11 @@
+syntax on
 set number
 set incsearch
 set hlsearch
 set laststatus=2
 set background=dark
+set termguicolors
+syntax on
 
 " tab settings
 set expandtab
@@ -16,30 +19,95 @@ tnoremap <C-w>j <C-\><C-n><C-w>j
 tnoremap <C-w>k <C-\><C-n><C-w>k
 tnoremap <C-w>l <C-\><C-n><C-w>l
 
-" open terminal
-":bel split
-":term
-":res -10
-
 
 " plugins
 call plug#begin()
-  Plug 'preservim/nerdtree'
-  Plug 'vim-airline/vim-airline'
-  Plug 'morhetz/gruvbox'
-  Plug 'vim-airline/vim-airline-themes'
-  Plug 'julialang/julia-vim'
+
+    "file explorer
+    Plug 'kyazdani42/nvim-tree.lua'
+
+    " bufferline
+    Plug 'akinsho/bufferline.nvim'
+
+    " colorschemes
+    Plug 'morhetz/gruvbox'
+    Plug 'sainnhe/edge'
+    Plug 'sainnhe/sonokai'
+    Plug 'navarasu/onedark.nvim'
+    Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+    Plug 'marko-cerovac/material.nvim'
+    Plug 'sainnhe/gruvbox-material'
+    
+    " julia support
+    Plug 'julialang/julia-vim'
+
+    "treesitter 
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+
+    "lsp
+    "Plug 'neovim/nvim-lspconfig'
+
+    "autocomplete
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+    " dashboard
+    Plug 'glepnir/dashboard-nvim'
+
+    " nvim telescope
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+
+    " lualine
+    Plug 'nvim-lualine/lualine.nvim'
+    Plug 'kyazdani42/nvim-web-devicons'
+
+
 call plug#end()
 
+colorscheme edge
 
-colorscheme gruvbox 
+let g:dashboard_default_executive ='telescope'
 
-"NERDTree
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd VimEnter * NERDTree | if argc() > 0 || exists("s:std_in") | wincmd p | endif
-"
-" airline settings
-let g:airline_theme='murmur'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#whitespace#enabled = 0
+lua <<EOF
+    require'lualine'.setup()
+    require'nvim-tree'.setup()
+    require("bufferline").setup{
+    options = {
+        diagnostics = "coc"
+        }
+    }
+    --treesitter
+    require'nvim-treesitter.configs'.setup {
+      highlight = {
+        enable = true,
+        disable = {},
+      },
+      indent = {
+        enable = false,
+        disable = {},
+      },
+      ensure_installed = {
+        "c",
+        "cpp",
+        "latex",
+        "python",
+        "vim",
+        "julia"
+      },
+    }
+EOF
+
+
+" nvim tree 
+nnoremap <Space>o :NvimTreeToggle<CR>
+
+" buffer movement
+nnoremap <Space><Left> :bp<CR>
+nnoremap <Space><Right> :bn<CR>
+nnoremap <Space>d :bd<CR>
+
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
